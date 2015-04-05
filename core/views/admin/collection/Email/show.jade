@@ -1,0 +1,21 @@
+extends ../../layout/doc_show
+
+block content
+	section(id="user_" + data.id): dl
+
+		dt Account name
+		dd=data.account
+		dt User:
+		dd=data.user
+		dt Host
+		dd=data.host
+		dt Port
+		dd=data.port
+		dt Domain
+		dd=data.domain
+		dt Timeout
+		dd=data.timeout
+		dt SSL
+		dd=data.ssl
+		dt TLS
+		dd=data.tls

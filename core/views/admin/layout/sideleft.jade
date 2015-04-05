@@ -1,0 +1,15 @@
+//- Sidebar - menu toggle
+a#menuLink(href="#menu", class="menu-link")
+	//- Hamburger icon
+	span
+
+#menu
+	.pure-menu.pure-menu-open
+		a.pure-menu-heading(href="/admin") JetKit
+
+		ul
+			li: a(href="/admin/collection/User") Users
+			li: a(href="/admin/collection/File") Files
+			li.menu-item-divided: a(href="/admin/collection/Email") Emails
+			li: a(href="/") Website
+			li: a(href="/user/logout", title="Log out") Log out

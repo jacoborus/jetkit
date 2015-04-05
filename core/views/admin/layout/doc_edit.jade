@@ -1,0 +1,12 @@
+extends layout
+
+block topfix
+	.topfix
+		input.pure-button.button-success(type="submit", value="Save", target="mainform")
+
+block content
+	section(id='edit_' + req.modelName + '_' + data._id)
+		h1 Edit: #{req.modelName} - #{data._id}
+
+		form.pure-form(action="/admin/collection/" + req.modelName + "/" + data._id, method="put", name="mainform", role="form", enctype="multipart/form-data")
+			block mainform

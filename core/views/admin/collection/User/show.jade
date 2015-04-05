@@ -1,0 +1,13 @@
+extends ../../layout/doc_show
+
+block content
+	section(id="user_" + data.id)
+
+		dl
+			dt #id
+			dd= data.id
+			dt username
+			dd= data.username
+			dt Email
+			dd: a(href="mailto:"+data.email)= data.email
+

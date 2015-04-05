@@ -1,0 +1,23 @@
+extends ../../layout/layout
+
+block content
+	section#list-File
+		h1 Files
+		a.pure-button(href='/admin/collection/File/new'): b + New file
+
+		if data.length !== 0
+			table.pure-table
+				thead
+					tr
+						th filename
+						th description
+						th Edit
+
+				tbody
+					each file in data
+						tr
+							td: a(href='/admin/collection/File/'+ file._id)= file.filename
+							td= file.description
+							td: a(href='/admin/collection/File/' + file._id + '/edit') Edit
+
+		p #{data.length} files

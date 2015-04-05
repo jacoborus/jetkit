@@ -1,0 +1,23 @@
+extends ../../layout/layout
+
+block content
+	section#list-User
+		h1 Users
+		a.pure-button(href="/admin/collection/User/new"): b + New user
+
+		if data.length !== 0
+			table.pure-table
+				thead
+					tr
+						th Username
+						th Email
+						th Edit
+
+				tbody
+					each user in data
+						tr
+							td: a(href='/admin/collection/User/'+ user._id)!= user.username
+							td: a(href='/admin/collection/User/'+ user._id)!= user.email
+							td: a(href="/admin/collection/User/" + user._id + "/edit") Edit
+
+		p #{data.length} users

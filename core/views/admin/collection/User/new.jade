@@ -1,0 +1,15 @@
+extends ../../layout/doc_new
+
+block mainform
+	.pure-form-stacked: fieldset.panel
+		legend User
+		label Username
+		input(type="text", name="username", value=data.username)
+		label Email
+		input(type="text", name="email", value=data.email)
+		label Rol
+		select(name="rol")
+			option admin
+			option user
+		label Password
+		input(type="password", name="password")

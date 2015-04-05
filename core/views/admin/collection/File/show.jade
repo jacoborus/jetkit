@@ -1,0 +1,16 @@
+extends ../../layout/doc_show
+
+block content
+	section(id="user_" + data.id): dl
+		dt Filename
+		dd= data.filename
+		dt Filepath
+		dd= data.path
+		dt Folder hash
+		dd= data.hash
+		dt Description
+		dd= data.description
+		dd= data.image
+		if data.image === true
+			dt Imagen
+			dd: img(src="/_uploads/" + data.path, style="width:300px;")

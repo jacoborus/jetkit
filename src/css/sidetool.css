@@ -1,0 +1,69 @@
+.sidetool-bg {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.7);
+	z-index: 9998;
+	top: 0;
+}
+
+.sidetool-bg.hidden {
+	display: none;
+}
+
+.sidetool {
+	position: fixed;
+	display: block;
+	top: 0;
+	max-width: 100%;
+	height: 100%;
+	width: 32em;
+	right: 0;
+	box-sizing: border-box;
+	padding: 2em;
+	background: #333;
+	z-index: 9999;
+	transition: right 0.5s ease;
+}
+.sidetool.hidden {
+	right: -36em;
+}
+
+.sidetool ul {
+	float: left;
+	width: 100%;
+	padding: 10px;
+	background: #ddd;
+}
+
+.sidetool ul li {
+	float: left;
+	width: 100%;
+	margin: 5px 0;
+	padding: 5px 10px;
+	box-sizing: border-box;
+	border-bottom: 2px solid #ccc;
+	cursor: pointer;
+	list-style: none;
+	background: #eee;
+}
+
+.sidetool ul li.current {
+	background: #fff;
+	color: #000;
+}
+.sidetool ul li:hover {
+	background: #666;
+	color: #eee;
+}
+
+
+
+.sidetool ul li span {
+	float: left;
+	width: 100%;
+}
+
+.sidetool ul li span.big {
+	font-size: 120%;
+}

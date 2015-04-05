@@ -1,0 +1,5 @@
+{
+	"start" : "node ./app.js",
+	"jk-boilerplate" : "hw-boilerplate",
+	"jk-initdb" : "node ./node_modules/jetkit/stuff/init-db.js"
+}

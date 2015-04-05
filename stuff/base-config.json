@@ -1,0 +1,23 @@
+{
+    "character_encoding":"utf-8",
+    "logPath": "output/log",
+    "mongodb":{
+        "uri":"mongodb://localhost:27017/jk-web"
+    },
+    "passports" : {
+        "local" : true
+    },
+    "globalUrl" : "http://localhost:3000",
+    "port":3000,
+    "request_timeout":1000,
+    "session":{
+        "key":"mykey",
+        "secret": "mysecret"
+    },
+    "publicFolders" : {
+        "/_uploads": "/uploads"
+    },
+    "tempFolder" : "output/temp",
+    "buildFolder" : "output/build",
+    "uploadFolders" : {}
+}

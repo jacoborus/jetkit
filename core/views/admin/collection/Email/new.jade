@@ -1,0 +1,24 @@
+extends ../../layout/doc_new
+
+block mainform
+	.pure-form-stacked: fieldset.panel
+		label Account name
+		input(type="text", name="account", value=data.account)
+		label User:
+		input(type="text", name="user", value=data.user)
+		label Password
+		input(type="password", name="password")
+		label Host
+		input(type="text", name="host", value=data.host)
+		label Port
+		input(type="text", name="port", value=data.port)
+		label Domain
+		input(type="text", name="domain", value=data.domain)
+		label Timeout
+		input(type="text", name="timeout", value=data.timeout)
+		label(for="ssl", class="pure-checkbox")
+			input(id="ssl", name="ssl", type="checkbox")
+			| SSL
+		label(for="tls", class="pure-checkbox")
+			input(id="tls", name="tls", type="checkbox")
+			| TLS

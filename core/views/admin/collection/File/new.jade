@@ -1,0 +1,10 @@
+extends ../../layout/doc_new
+
+block mainform
+	.pure-form-stacked: fieldset.panel
+		label(for="description") Description
+		input(type="text", name="description", value=data.description)
+		input(type="file", id="files", submitter="true", push="path filepath, filetype filetype, filename filename, hash hash", preview="previewimg")
+		p(id="status") Please select a file
+		div(style="border:1px solid gray;width:300px;", id="preview")
+			img(id="previewimg", src="/_uploads/" + data.path, style="width:300px;")

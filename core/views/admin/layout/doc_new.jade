@@ -1,0 +1,13 @@
+extends layout
+
+block topfix
+	.topfix
+		input.pure-button.button-success(type="submit", value="Create", target="mainform")
+
+block content
+	section(id="nuevo_item_" + req.modelName)
+
+		h1 #{req.modelName}: new item
+
+		form.pure-form(action="/admin/collection/" + req.modelName, method="post", name="mainform", role="form", enctype="multipart/form-data")
+			block mainform

@@ -1,0 +1,15 @@
+doctype html
+script var parasubmit = false;
+html
+	//--[if IE 8]> <html class="no-js lt-ie9" lang="en" > <![endif]-->
+	//--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+	include head
+	body
+		#layout.pure-skin-mine
+			//include ../includes/messages
+			include sideleft
+			.pure-g: .pure-u-1
+				include header
+				.page-content.inset
+					block content
+					include footer

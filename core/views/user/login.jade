@@ -1,0 +1,12 @@
+form(action="/user/login", role="form", method="post")
+	input(type='hidden', name='_csrf', value="#{csrf_token}")
+
+	label(for='email') Email
+	input(type='email', name="email", placeholder='Email')
+
+	label(for='password') Password
+	input(type='password', name="password", placeholder='Password')
+	br
+	input(type='submit', value="Login")
+
+a(href="/user/forgot-password", title="recover password") I forgot my password

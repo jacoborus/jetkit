@@ -11,8 +11,7 @@ var path = require('path'),
 	passport = require('passport'),
 	timeOut = require('./local/timeout.js')(),
 	bodyParser = require('body-parser'),
-	flash = require('connect-flash'),
-	multer  = require('multer');
+	flash = require('connect-flash');
 
 // Middleware
 
@@ -67,8 +66,7 @@ exports.wiretree = function (app, express, config, UserModel, wtDone) {
 	// parse application/x-www-form-urlencoded
 	app.use( bodyParser.urlencoded({ extended: false }));
 	// parse application/json
-	app.use( bodyParser.json() );
-	//app.use( multer( ));
+	app.use( bodyParser.json( ));
 	app.use( methodOverride( ));
 
 	/*

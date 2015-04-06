@@ -27,7 +27,7 @@ exports.wiretree = function (config, toolsUtil, FilewareSrv) {
 		this.credentials = {};
 		this.temporals = {};
 		this.opts = opts = opts || {};
-		this.path = path.resolve( config.rootPath, opts.path )
+		this.path = path.resolve( config.rootPath, opts.path );
 		if (opts.s3) {
 			throw new Error('S3 is not ready for use');
 		} else {
@@ -55,8 +55,6 @@ exports.wiretree = function (config, toolsUtil, FilewareSrv) {
 
 	// only valid for local storage
 	Rebucket.prototype.put = function (origin, destination, callback) {
-		console.log(origin)
-		console.log(destination)
 		this.bucket.put( origin, destination, callback );
 	};
 

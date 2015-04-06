@@ -177,4 +177,4 @@ module.exports = {
 	settings : {
 		modelName: 'User'
 	}
-}
+};

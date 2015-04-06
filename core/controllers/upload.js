@@ -26,9 +26,10 @@ exports.wiretree = function (config, publicBucket) {
 			destiny = publicBucket.path + '/' + req.params.hash + '/' + safename.low( credential.filename ),
 			filetype = req.files.file.mimetype,
 			img = false;
-			if (filetype.split('/')[0] === 'image') {
-				img = true;
-			};
+
+		if (filetype.split('/')[0] === 'image') {
+			img = true;
+		}
 
 		publicBucket.put( origin, destiny, function (err, data) {
 			if (err) { return next( err );}

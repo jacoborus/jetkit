@@ -1,7 +1,5 @@
 'use strict';
 
-var fs = require('fs');
-
 var deepExt = function(ori, desti) {
 	var key, val;
 	for (key in ori) {

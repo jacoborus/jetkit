@@ -1,6 +1,6 @@
 'use strict';
 
-exports.wiretree = function (app, config, UserModel, mailerSrv, toolsUtil) {
+exports.wiretree = function (config, UserModel, mailerSrv, toolsUtil) {
 	var User = UserModel,
 		mod = {},
 		uniid = toolsUtil.uniid;

@@ -28,7 +28,6 @@ var Jetkit = function (folder) {
 		output: 'output/build',
 		buildFolders: ['public', 'views'],
 		config: baseConfig,
-		validator: {engine: 'jetkit'},
 		envProcessing: {MONGODB_URI: 'mongodb.uri'},
 		afterConfig: function (next) {
 			this.config.rootPath = this.folder;

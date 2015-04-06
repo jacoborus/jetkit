@@ -2,7 +2,7 @@
     "character_encoding":"utf-8",
     "logPath": "output/log",
     "mongodb":{
-        "uri":"mongodb://localhost:27017/hw-web"
+        "uri":"mongodb://localhost:27017/jk-web"
     },
     "passports" : {
         "local" : true

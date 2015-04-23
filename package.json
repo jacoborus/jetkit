@@ -1,6 +1,6 @@
 {
   "name": "jetkit",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Dynamic website generator. Work in progress",
   "main": "index.js",
   "scripts": {
@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "async": "^0.9.0",
-    "body-parser": "^1.12.2",
+    "body-parser": "^1.12.3",
     "compression": "^1.4.3",
     "connect-flash": "^0.1.1",
-    "connect-mongo": "^0.7.0",
+    "connect-mongo": "^0.8.1",
     "connect-timeout": "^1.6.1",
     "cookie-parser": "^1.3.4",
     "cookies": "^0.5.0",
@@ -22,9 +22,9 @@
     "debug": "^2.1.3",
     "errorhandler": "^1.3.5",
     "express": "^4.12.3",
-    "express-session": "^1.10.4",
+    "express-session": "^1.11.1",
     "filesaver": "0.0.10",
-    "hardwire": "^0.10.3",
+    "hardwire": "^0.10.8",
     "jade": "^1.9.2",
     "method-override": "^2.3.2",
     "miniruler": "0.0.3",
@@ -38,7 +38,7 @@
     "passport-local": "^1.0.0",
     "safename": "^1.0.0",
     "serve-favicon": "^2.2.0",
-    "winston": "^0.9.0"
+    "winston": "^1.0.0"
   },
   "repository": {
     "type": "git",

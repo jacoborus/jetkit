@@ -1,6 +1,6 @@
 {
   "name": "jetkit",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Dynamic website generator. Work in progress",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "express": "^4.12.3",
     "express-session": "^1.11.1",
     "filesaver": "0.0.10",
-    "hardwire": "^0.10.9",
+    "hardwire": "^0.10.10",
     "jade": "^1.9.2",
     "method-override": "^2.3.2",
     "miniruler": "0.0.3",

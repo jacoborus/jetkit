@@ -34,9 +34,7 @@ form img[submitter]:not([src]):hover {
   background-image: url("/img/plusses.png");
   background-color: #f47216;
 }
-body #layout {
-  paffing-left: 170px;
-}
+
 .topfix {
   position: fixed;
   width: 100%;

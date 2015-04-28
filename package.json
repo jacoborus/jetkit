@@ -1,6 +1,6 @@
 {
   "name": "jetkit",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Dynamic website generator. Work in progress",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "method-override": "^2.3.2",
     "miniruler": "0.0.3",
     "mkdirp": "^0.5.0",
-    "mongoose": "^4.0.1",
+    "mongoose": "^4.0.2",
     "mongoose-validator": "^1.0.3",
     "morgan": "^1.5.2",
     "multer": "^0.1.8",

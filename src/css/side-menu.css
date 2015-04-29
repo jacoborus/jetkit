@@ -25,7 +25,7 @@ This is the parent `<div>` that contains the menu and the content area.
 */
 #layout {
     position: relative;
-    padding-left: 0;
+    padding-left: 1em;
 }
     #layout.active {
         position: relative;
@@ -182,7 +182,7 @@ Hides the menu at `48em`, but modify this based on your app's needs.
     }
 
     #layout {
-        padding-left: 170px; /* left col width "#menu" */
+        padding-left: 15em; /* left col width "#menu" */
         padding-right: 20px; /* left col width "#menu" */
         left: 0;
     }

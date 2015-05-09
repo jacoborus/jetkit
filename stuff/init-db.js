@@ -34,9 +34,10 @@ var encryptPassword = function(password, salt) {
 	try {
 		encrypred = crypto.createHmac('sha1', salt).update(password).digest('hex');
 		return encrypred;
-	} catch (_error) {
-		err = _error;
-		return '';
+	} catch (err) {
+		if (err) {
+			throw err;
+		}
 	}
 };
 
@@ -84,7 +85,8 @@ if (mongoose.connection.readyState !== null) {
 		var msg;
 		if (err) {
 			msg = 'Failed to connect to mongodb instance at ' + config.mongodb.uri + '. Please confirm database instance is running.';
-			return msg;
+			console.log( msg );
+			throw err;
 		} else {
 			return creadmin();
 		}

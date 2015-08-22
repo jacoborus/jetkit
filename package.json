@@ -1,6 +1,6 @@
 {
   "name": "jetkit",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Dynamic website generator. Work in progress",
   "main": "index.js",
   "scripts": {

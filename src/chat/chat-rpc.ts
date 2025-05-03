@@ -3,15 +3,10 @@ import db from "@/db/db";
 import { chat as chatRepo } from "@/chat/chat-repo";
 import { desc, lt } from "drizzle-orm";
 
-import {
-  ee,
-  protectedProcedure,
-  publicProcedure,
-  rpcContext,
-} from "@/rpc/rpc-core";
+import { ee, protectedProcedure, publicProcedure } from "@/rpc/rpc-core";
 
 export type ChatRoutes = typeof chatRoutes;
-export const chatRoutes = rpcContext.router({
+export const chatRoutes = {
   sendMessage: protectedProcedure
     .input(
       z.object({
@@ -56,4 +51,4 @@ export const chatRoutes = rpcContext.router({
       });
       return messages;
     }),
-});
+};

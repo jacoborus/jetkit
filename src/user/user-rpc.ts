@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { protectedProcedure, adminProcedure, rpcContext } from "@/rpc/rpc-core";
+import { protectedProcedure, adminProcedure } from "@/rpc/rpc-core";
 import * as service from "./user-service";
 
 const withId = z.object({
@@ -8,7 +8,8 @@ const withId = z.object({
 });
 
 export type UserRoutes = typeof userRoutes;
-export const userRoutes = rpcContext.router({
+
+export const userRoutes = {
   listUsers: adminProcedure.query(async () => {
     const users = await service.getAllDetails();
     return users;
@@ -28,4 +29,4 @@ export const userRoutes = rpcContext.router({
     await service.remove(input.id);
     return true;
   }),
-});
+};

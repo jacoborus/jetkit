@@ -7,12 +7,11 @@ import { prettyJSON } from "hono/pretty-json";
 import { serve, ServerType } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { readFile } from "node:fs/promises";
-import { applyWSSHandler } from "@trpc/server/adapters/ws";
 
 import config from "@/config";
 import { authRouter } from "@/auth/auth-routes";
-import { rpcRouter, rpcRoute, RpcRouter } from "@/rpc/rpc-router";
-import { createAuthedContext } from "@/rpc/rpc-core";
+import { rpcServer } from "@/rpc/rpc-server";
+import { wss } from "@/rpc/rpc-server";
 
 const isProd = process.env["NODE_ENV"] === "production";
 let html = await readFile(isProd ? "dist/index.html" : "index.html", "utf8");
@@ -32,7 +31,6 @@ export default app;
 app.use(
   "*",
   cors({
-    // TODO: move to config
     origin: config.BASE_URL,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS", "DELETE", "PUT", "PATCH"],
@@ -50,7 +48,7 @@ app
   .use("/assets/*", serveStatic({ root: isProd ? "dist/assets" : "./" }))
   .use("/dist/*", serveStatic({ root: "dist/" }))
   .route("/auth", authRouter)
-  .route("/rpc", rpcRoute)
+  .route("/rpc", rpcServer)
   .get("reset-password", (c) => {
     return c.redirect(
       `http://localhost:5173/reset-password?token=${c.req.query("token")}`,
@@ -63,18 +61,6 @@ interface GlobalThis {
   oldServe: ServerType;
 }
 const glob: GlobalThis = globalThis as unknown as GlobalThis;
-const wss = new WebSocketServer({ noServer: true });
-
-applyWSSHandler<RpcRouter>({
-  wss,
-  router: rpcRouter,
-  keepAlive: {
-    enabled: true,
-    pingMs: 30000,
-    pongWaitMs: 5000,
-  },
-  createContext: createAuthedContext,
-});
 
 if (!isProd) {
   const oldWss = glob.oldWss as WebSocketServer;

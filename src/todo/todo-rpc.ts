@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { on } from "events";
 
-import { protectedProcedure, rpcContext, ee } from "@/rpc/rpc-core";
+import { protectedProcedure, ee } from "@/rpc/rpc-core";
 import * as service from "./todo-service";
 import * as schemas from "./todo-schemas";
 
 export type TodoPayload = ["create", schemas.Todo] | ["delete", string];
 
 export type TodoRoutes = typeof todoRoutes;
-export const todoRoutes = rpcContext.router({
+export const todoRoutes = {
   listTodos: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.user;
     const todos = await service.list(user?.id);
@@ -47,4 +47,4 @@ export const todoRoutes = rpcContext.router({
       yield payload;
     }
   }),
-});
+};

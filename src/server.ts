@@ -22,26 +22,12 @@ console.log(`Running on prod? => ${isProd}`);
 if (!isProd) {
   html = html.replace(
     "<head>",
-    `
-  <script type="module" src="/@vite/client"></script>
-  `,
+    `<script type="module" src="/@vite/client"></script>`,
   );
 }
 
 const app = new Hono();
-
-const wss = new WebSocketServer({ noServer: true });
-
-applyWSSHandler<RpcRouter>({
-  wss,
-  router: rpcRouter,
-  keepAlive: {
-    enabled: true,
-    pingMs: 30000,
-    pongWaitMs: 5000,
-  },
-  createContext: createAuthedContext,
-});
+export default app;
 
 app.use(
   "*",
@@ -56,70 +42,66 @@ app.use(
   }),
 );
 
-app.use("*", compress());
-app.use("*", prettyJSON());
-app.use("*", logger());
-
 app
+  .use("*", compress())
+  .use("*", prettyJSON())
+  .use("*", logger())
   .use("/*", serveStatic({ root: isProd ? "dist/" : "./" }))
   .use("/assets/*", serveStatic({ root: isProd ? "dist/assets" : "./" }))
   .use("/dist/*", serveStatic({ root: "dist/" }))
   .route("/auth", authRouter)
   .route("/rpc", rpcRoute)
+  .get("reset-password", (c) => {
+    return c.redirect(
+      `http://localhost:5173/reset-password?token=${c.req.query("token")}`,
+    );
+  })
   .get("/*", (c) => c.html(html));
 
-app.get("reset-password", (c) => {
-  return c.redirect(
-    `http://localhost:5173/reset-password?token=${c.req.query("token")}`,
-  );
+interface GlobalThis {
+  oldWss: WebSocketServer;
+  oldServe: ServerType;
+}
+const glob: GlobalThis = globalThis as unknown as GlobalThis;
+const wss = new WebSocketServer({ noServer: true });
+
+applyWSSHandler<RpcRouter>({
+  wss,
+  router: rpcRouter,
+  keepAlive: {
+    enabled: true,
+    pingMs: 30000,
+    pongWaitMs: 5000,
+  },
+  createContext: createAuthedContext,
 });
 
-export default app;
-
-if (isProd) {
-  const server = serve({ fetch: app.fetch, port: config.API_PORT }, (info) => {
-    console.log(`Listening on http://localhost:${info.port}`);
-  });
-
-  server.on("upgrade", (request, socket, head) => {
-    if (request.url !== "/rpc") {
-      socket.destroy();
-      return;
-    }
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit("connection", ws, request);
-    });
-  });
-} else {
-  interface GlobalThis {
-    oldWss: WebSocketServer;
-    oldServe: ServerType;
-  }
-  const glob: GlobalThis = globalThis as unknown as GlobalThis;
+if (!isProd) {
   const oldWss = glob.oldWss as WebSocketServer;
   const oldServe = glob.oldServe as ServerType;
-
-  if (oldWss) {
-    oldWss.close();
-  }
-  if (oldServe) {
-    oldServe.close();
-  }
-
-  const server2 = serve({ fetch: new Hono().fetch, port: 3001 }, () => {
-    console.log(`listening to WS - http://localhost:${3001}`);
-  });
-
-  glob.oldWss = wss;
-  glob.oldServe = server2;
-
-  server2.on("upgrade", (request, socket, head) => {
-    if (request.url !== "/rpc") {
-      socket.destroy();
-      return;
-    }
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit("connection", ws, request);
-    });
-  });
+  if (oldWss) oldWss.close();
+  if (oldServe) oldServe.close();
 }
+
+const serveOpts = isProd
+  ? { fetch: app.fetch, port: config.API_PORT }
+  : { fetch: new Hono().fetch, port: 3001 };
+
+const server = serve(serveOpts, (info) => {
+  console.log(`Listening on http://localhost:${info.port}`);
+});
+
+if (!isProd) {
+  glob.oldWss = wss;
+  glob.oldServe = server;
+}
+
+server.on("upgrade", (request, socket, head) => {
+  if (request.url !== "/rpc") {
+    socket.destroy();
+    return;
+  }
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit("connection", ws, request);
+  });
+});

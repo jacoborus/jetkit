@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {}
+
+html,
+body {
+  height: 100%;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}

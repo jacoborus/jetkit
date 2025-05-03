@@ -1,0 +1,16 @@
+---
+name: jetkit
+services:
+  postgres:
+    container_name: jetkit
+    image: postgres:latest
+    restart: 'no'
+    env_file: [.env]
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports: [5437:5432]
+    volumes: [pgdata:/var/lib/postgresql/data]
+volumes:
+  pgdata:

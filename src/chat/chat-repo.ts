@@ -6,7 +6,9 @@ import userRepo from "@/user/user-repo";
 export const chat = pgTable("chat_msg", {
   id: uuid().defaultRandom().primaryKey(),
   message: text("message").notNull(),
-  author: uuid("author_id").references(() => userRepo.id),
+  author: uuid("author_id")
+    .references(() => userRepo.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

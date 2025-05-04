@@ -56,11 +56,19 @@ export const chatRoutes = {
       return messages;
     }),
 
-  onNewMessage: protectedProcedure.subscription(async function* (opts) {
-    for await (const [data] of on(ee, "newChat", { signal: opts.signal })) {
-      // const payload = data as TodoPayload;
-      // yield payload;
-      yield data;
-    }
-  }),
+  onNewMessage: protectedProcedure
+    .input(
+      z
+        .object({
+          before: z.string().datetime().optional(),
+        })
+        .optional(),
+    )
+    .subscription(async function* (opts) {
+      for await (const [data] of on(ee, "newChat", { signal: opts.signal })) {
+        // const payload = data as TodoPayload;
+        // yield payload;
+        yield data;
+      }
+    }),
 };

@@ -11,22 +11,24 @@ interface ChatMessage {
     id: string;
     image?: string | null;
     name: string;
-  } | null;
+  };
 }
+
 const uiStore = useUiStore();
 const newMsg = ref("");
 const list = ref<ChatMessage[]>([]);
 
-const updateSub = client.chat.onNewMessage.subscribe(undefined, {
-  onData: (payload) => {
-    console.log(payload);
-    list.value.push(payload);
-  },
-  onError(err) {
-    uiStore.notify(err.message ?? "Error");
-  },
-});
-onBeforeUnmount(updateSub.unsubscribe);
+onBeforeUnmount(
+  client.chat.onNewMessage.subscribe(undefined, {
+    onData: (payload) => {
+      console.log(payload);
+      list.value.push(payload);
+    },
+    onError(err) {
+      uiStore.notify(err.message ?? "Error");
+    },
+  }).unsubscribe,
+);
 
 getMsgs();
 
@@ -60,7 +62,7 @@ async function getMsgs() {
 
     <ul class="p-4">
       <li v-for="todo in list" :key="todo.id" class="list-disc">
-        {{ todo.sender?.name || "--" }}: {{ todo.message }}
+        {{ todo.sender.name || "--" }}: {{ todo.message }}
       </li>
     </ul>
   </div>

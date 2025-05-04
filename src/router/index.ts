@@ -9,6 +9,7 @@ import authRoutes from "./auth-routes";
 
 import { useAuthStore } from "@/store/auth-store";
 import TodoList from "@/components/TodoList.vue";
+import ChatRoom from "@/chat/ChatRoom.vue";
 
 const routes: RouteRecordRaw[] = [
   { path: "/", component: HomePage, name: "Home" },
@@ -17,6 +18,12 @@ const routes: RouteRecordRaw[] = [
     path: "/todos",
     component: TodoList,
     name: "Todos",
+    meta: { private: true },
+  },
+  {
+    path: "/chat",
+    component: ChatRoom,
+    name: "Chat",
     meta: { private: true },
   },
 ];

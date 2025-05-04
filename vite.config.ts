@@ -11,7 +11,7 @@ import config from "./src/config";
 
 export default defineConfig({
   server: {
-    port: config.API_PORT, // you can change it to your preferred port if needed
+    port: config.API_PORT,
   },
   // This is the default
   build: {

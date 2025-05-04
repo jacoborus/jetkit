@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { on } from "events";
 import db from "@/db/db";
 import { chat as chatRepo } from "@/chat/chat-repo";
 import { desc, lt } from "drizzle-orm";
 
-import { ee, protectedProcedure, publicProcedure } from "@/rpc/rpc-core";
+import { ee, protectedProcedure } from "@/rpc/rpc-core";
 
 export type ChatRoutes = typeof chatRoutes;
 export const chatRoutes = {
@@ -22,11 +23,14 @@ export const chatRoutes = {
         })
         .returning();
 
-      ee.emit("newChat", { msg: msgs[0], user: ctx.user });
+      ee.emit("newChat", {
+        ...msgs[0],
+        sender: { id: ctx.user.id, name: ctx.user.name, image: ctx.user.image },
+      });
       return { success: true };
     }),
 
-  getMessages: publicProcedure
+  getMessages: protectedProcedure
     .input(
       z.object({
         before: z.string().datetime().optional(),
@@ -51,4 +55,12 @@ export const chatRoutes = {
       });
       return messages;
     }),
+
+  onNewMessage: protectedProcedure.subscription(async function* (opts) {
+    for await (const [data] of on(ee, "newChat", { signal: opts.signal })) {
+      // const payload = data as TodoPayload;
+      // yield payload;
+      yield data;
+    }
+  }),
 };

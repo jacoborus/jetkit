@@ -24,6 +24,7 @@ const store = useAuthStore();
     <template v-else>
       <li>
         <RouterLink to="/todos">Todos</RouterLink>
+        <RouterLink to="/chat">Chat</RouterLink>
       </li>
 
       <li v-if="store.isAdmin">

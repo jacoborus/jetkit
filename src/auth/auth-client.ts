@@ -1,5 +1,5 @@
 import { adminClient } from "better-auth/client/plugins";
-import { createAuthClient } from "better-auth/vue";
+import { createAuthClient } from "better-auth/react";
 import { useAuthStore } from "@/store/auth-store";
 
 export const authClient = createAuthClient({
@@ -9,7 +9,7 @@ export const authClient = createAuthClient({
   fetchOptions: {
     onError: async ({ response }) => {
       if (response.status === 401) {
-        await useAuthStore().singOut();
+        await useAuthStore.getState().signOut();
       }
     },
   },

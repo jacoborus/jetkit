@@ -3,17 +3,13 @@
     "allowJs": true,
     "composite": true,
     "skipLibCheck": true,
+    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "paths": {
-      "@/pages/*": [
-        "src/components/pages/*"
-      ],
-      "@/ui/*": [
-        "src/components/ui/*"
-      ],
       "@/*": [
         "src/*"
       ]

@@ -14,14 +14,27 @@ import { rpcServer } from "@/rpc/rpc-server";
 import { wss } from "@/rpc/rpc-server";
 
 const isProd = process.env["NODE_ENV"] === "production";
-let html = await readFile(isProd ? "dist/index.html" : "index.html", "utf8");
+
+let html = await readFile(
+  isProd ? "dist/index.html" : "src/index.html",
+  "utf8",
+);
 
 console.log(`Running on prod? => ${isProd}`);
 
 if (!isProd) {
   html = html.replace(
     "<head>",
-    `<script type="module" src="/@vite/client"></script>`,
+    `
+    <script type="module" src="/@vite/client"></script>
+    <script type="module">
+      import RefreshRuntime from "/@react-refresh";
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+    </script>
+    `,
   );
 }
 

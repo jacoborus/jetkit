@@ -6,10 +6,10 @@ import {
   splitLink,
   wsLink,
 } from "@trpc/client";
+import { useNavigate } from "react-router";
 
-import router from "@/router";
 import type { RpcRouter } from "@/rpc/rpc-router";
-import { useAuthStore } from "@/store/auth-store";
+// import { useAuthStore } from "@/store/auth-store";
 
 const wsClient = createWSClient({ url: "ws://localhost:3001/rpc" });
 
@@ -30,8 +30,8 @@ export const client = createTRPCClient<RpcRouter>({
             credentials: "include",
           }).then((response) => {
             if (response.status === 401) {
-              useAuthStore().setLoggedOut();
-              router.push({ name: "SignIn" });
+              // useAuthStore.getState().setLoggedOut();
+              useNavigate()("/sign-in");
             }
             return response;
           });

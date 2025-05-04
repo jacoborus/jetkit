@@ -1,129 +1,119 @@
-import { defineStore } from "pinia";
-
-import router from "@/router";
-import { localLoad, localSave } from "@/util";
+import { create } from "zustand";
 import { useUiStore } from "./ui-store";
-import { authClient } from "@/auth/auth-client";
+import { localLoad, localSave } from "@/lib/storage-utils";
+import { authClient } from "@/lib/auth-client";
 
-interface UserCreateRequest {
-  email: string;
-  password: string;
-  name: string;
-}
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface AuthStoreState {
+interface AuthState {
   isLoggedIn: boolean;
   user: {
     id: string;
     email: string;
     name: string;
-    image?: string | null;
-    role: string;
+    language: string;
   };
-  isRefreshing: boolean;
 }
 
-export const useAuthStore = defineStore("auth", {
-  state: (): AuthStoreState => {
-    return {
-      isLoggedIn: localLoad("isLoggedIn") || false,
-      user: {
-        id: "",
-        email: "",
-        name: "",
-        image: null,
-        role: "",
-      },
-      isRefreshing: false,
-    };
+interface AuthActions {
+  init: () => void;
+  signIn: (email: string, password: string) => Promise<boolean>;
+  signUp: (email: string, password: string, name: string) => Promise<boolean>;
+  signOut: () => Promise<void>;
+  // readMe: () => Promise<void>;
+}
+
+export const useAuthStore = create<AuthState & AuthActions>((set) => ({
+  isLoggedIn: localLoad("isLoggedIn") || false,
+  user: {
+    id: "",
+    email: "",
+    name: "",
+    language: "",
   },
 
-  getters: {
-    isAdmin: (state) => {
-      return state.user.role === "admin";
-    },
+  async init() {
+    console.log("authStore init");
   },
 
-  actions: {
-    async init() {
-      if (this.isLoggedIn) {
-        const { data, error } = await authClient.getSession();
+  async signIn(email: string, password: string) {
+    return authClient.signIn
+      .email({ email, password })
+      .then(({ data, error }) => {
         if (error) {
-          return;
+          throw new Error(error.message);
         }
-        this.user.id = data.user.id;
-        this.user.email = data.user.email;
-        this.user.name = data.user.name;
-        this.user.role = data.user.role || "user";
-        this.user.image = data.user.image;
-      }
-    },
-
-    async singIn(credentials: LoginRequest) {
-      const { data, error } = await authClient.signIn.email(
-        {
-          email: credentials.email,
-          password: credentials.password,
-        },
-        {
-          onError: (ctx) => {
-            if (ctx.error.status === 403) {
-              useUiStore().notify("Please verify your email address", {
-                kind: "error",
-              });
-              return;
-            }
-            useUiStore().notify(ctx.error.message, { kind: "error" });
+        return data.user;
+      })
+      .then((me) => {
+        set({
+          isLoggedIn: true,
+          user: {
+            id: me.id || "",
+            email: me.email || "",
+            name: me.name || "",
+            language: "en",
+            // language: me.language || "",
           },
-        },
-      );
+        });
+        localSave("isLoggedIn", true);
 
-      if (error) {
-        this.setLoggedOut();
+        useUiStore.getState().addNotification(`Welcome back ${me.name || ""}!`);
+        return true;
+      })
+      .catch(() => {
+        useUiStore
+          .getState()
+          .addNotification("Invalid credentials", { kind: "error" });
+        set({ isLoggedIn: false });
         return false;
-      }
-
-      this.setLoggedIn(data.user);
-      return true;
-    },
-
-    setLoggedIn(user: { id: string; email: string }) {
-      this.user.id = user.id;
-      this.user.email = user.email;
-      this.isLoggedIn = true;
-      localSave("isLoggedIn", true);
-    },
-
-    setLoggedOut() {
-      this.isLoggedIn = false;
-      localSave("isLoggedIn", false);
-      this.user = {
-        id: "",
-        email: "",
-        name: "",
-        image: null,
-        role: "",
-      };
-    },
-
-    async singOut() {
-      await authClient.signOut();
-      this.setLoggedOut();
-      useUiStore().notify("You've been disconnected");
-      router.push("/sign-in");
-    },
-
-    async requestPasswordReset(email: string) {
-      await authClient.forgetPassword({ email });
-    },
-
-    async signUp(payload: UserCreateRequest) {
-      return await authClient.signUp.email(payload);
-    },
+      });
   },
-});
+
+  async signOut() {
+    await authClient.signOut();
+    set({ isLoggedIn: false });
+    localSave("isLoggedIn", false);
+    useUiStore
+      .getState()
+      .addNotification("You have been logged out", { kind: "success" });
+  },
+
+  async signUp(email: string, password: string, name: string) {
+    return authClient.signUp
+      .email({ email, password, name })
+      .then(({ error }) => {
+        console.log(error);
+        if (error) throw new Error("Wrong credentials");
+        return true;
+      })
+      .catch(() => {
+        useUiStore
+          .getState()
+          .addNotification("Invalid credentials", { kind: "error" });
+        return false;
+      });
+  },
+
+  // async readMe() {
+  //   return api
+  //     .request(
+  //       readMe({
+  //         fields: ["id", "email", "first_name", "last_name", "language"],
+  //       }),
+  //     )
+  //     .then((me) => {
+  //       set({
+  //         isLoggedIn: true,
+  //         user: {
+  //           id: me.id || "",
+  //           email: me.email || "",
+  //           first_name: me.first_name || "",
+  //           last_name: me.last_name || "",
+  //           language: me.language || "",
+  //         },
+  //       });
+  //       useUiStore
+  //         .getState()
+  //         .addNotification(`Welcome back ${me.first_name || ""}!`);
+  //     });
+  // },
+}));

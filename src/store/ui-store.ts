@@ -1,4 +1,4 @@
-import { defineStore } from "pinia";
+import { create } from "zustand";
 
 interface Notification {
   id: string;
@@ -6,7 +6,7 @@ interface Notification {
   kind: "info" | "error" | "success";
   duration: number;
   showCloseButton: boolean;
-  timeoutId?: number;
+  timeoutId?: NodeJS.Timeout;
 }
 
 interface ModalData {
@@ -15,10 +15,7 @@ interface ModalData {
   message: string;
   kind: "info" | "error" | "success";
   showCloseButton: boolean;
-  buttons: {
-    name: string;
-    onClick: (close: () => void) => void;
-  }[];
+  buttons: { name: string; onClick: (close: () => void) => void }[];
   cancelText?: string;
   showCancelButton?: boolean;
 }
@@ -37,71 +34,81 @@ interface UiState {
   modals: ModalData[];
 }
 
+interface UiActions {
+  addNotification: (message: string, opts?: AddNotificationOpts) => void;
+  removeNotification: (id: string) => void;
+  addModal: (opts: Partial<ModalData>) => void;
+  removeModal: (id: string) => void;
+  confirm: (opts: Partial<Confirmation>) => Promise<boolean>;
+}
+
 interface AddNotificationOpts {
   kind?: "info" | "error" | "success";
   duration?: number;
   showCloseButton?: boolean;
 }
 
-export const useUiStore = defineStore("ui", {
-  state: (): UiState => ({
-    notifications: [],
-    modals: [],
-  }),
+export const useUiStore = create<UiState & UiActions>((set, get) => ({
+  notifications: [],
+  modals: [],
 
-  actions: {
-    notify(message: string, opts?: AddNotificationOpts) {
-      const notification = createNotificationData(message, opts);
-      this.notifications.push(notification);
-      if (notification.duration) {
-        notification.timeoutId = setTimeout(
-          () => this.removeNotification(notification.id),
-          4000,
-        ) as unknown as number;
-      }
-    },
-
-    removeNotification(id: string) {
-      const notification = this.notifications.find((n) => n.id === id);
-      if (notification?.timeoutId) clearTimeout(notification.timeoutId);
-      this.notifications = this.notifications.filter((n) => n.id !== id);
-    },
-
-    addModal(opts: Partial<ModalData>) {
-      const modal = createModalData(opts);
-      this.modals.push(modal);
-    },
-
-    removeModal(id: string) {
-      this.modals = this.modals.filter((n) => n.id !== id);
-    },
-
-    confirm(opts: Partial<Confirmation>) {
-      return new Promise<boolean>((resolve) => {
-        const data = createModalData({
-          ...opts,
-          buttons: [
-            {
-              name: opts.yesCaption ?? "Yes",
-              onClick: (close) => {
-                close();
-                resolve(true);
-              },
-            },
-            {
-              name: opts.noCaption ?? "No",
-              onClick: (close) => {
-                close();
-                resolve(false);
-              },
-            },
-          ],
-        });
-        this.addModal(data);
-      });
-    },
+  addNotification: (message, opts?: AddNotificationOpts) => {
+    const { removeNotification, notifications } = get();
+    const notification = createNotificationData(message, opts);
+    set({ notifications: [...notifications, notification] });
+    if (notification.duration) {
+      notification.timeoutId = setTimeout(
+        () => removeNotification(notification.id),
+        4000,
+      );
+    }
   },
-});
+
+  removeNotification: (id) => {
+    const notification = get().notifications.find((n) => n.id === id);
+    if (notification?.timeoutId) clearTimeout(notification.timeoutId);
+    set({
+      notifications: get().notifications.filter((n) => n.id !== id),
+    });
+  },
+
+  addModal: (opts: Partial<ModalData>) => {
+    const { modals } = get();
+    const modal = createModalData(opts);
+    set({ modals: [...modals, modal] });
+  },
+
+  removeModal: (id) => {
+    set({
+      modals: get().modals.filter((n) => n.id !== id),
+    });
+  },
+
+  confirm: (opts: Partial<Confirmation>) => {
+    return new Promise<boolean>((resolve) => {
+      const data = createModalData({
+        ...opts,
+        buttons: [
+          {
+            name: opts.yesCaption ?? "Yes",
+            onClick: (close) => {
+              close();
+              resolve(true);
+            },
+          },
+          {
+            name: opts.noCaption ?? "No",
+            onClick: (close) => {
+              close();
+              resolve(false);
+            },
+          },
+        ],
+      });
+      get().addModal(data);
+    });
+  },
+}));
 
 function createNotificationData(
   message: string,

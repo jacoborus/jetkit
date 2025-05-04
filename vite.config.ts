@@ -2,14 +2,16 @@ import {
   // build,
   defineConfig,
 } from "vite";
-import vue from "@vitejs/plugin-vue";
 import devServer, { defaultOptions } from "@hono/vite-dev-server";
+// import nodeAdapter from "@hono/vite-dev-server/node";
+import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import config from "./src/config";
 // import { resolve } from 'path'
 
 export default defineConfig({
+  base: "./",
   server: {
     port: config.API_PORT,
   },
@@ -33,11 +35,12 @@ export default defineConfig({
     // copyPublicDir: false
   },
   plugins: [
-    vue(),
+    react(),
     tsconfigPaths(),
     tailwindcss(),
     devServer({
       entry: "./src/server.ts",
+      // adapter: nodeAdapter,
       exclude: defaultOptions.exclude.concat([
         /.*\.tsx?($|\?)/,
         /.*\.vue$/,

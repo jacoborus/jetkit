@@ -9,7 +9,7 @@ export const chat = pgTable("chat_msg", {
   author: uuid("author_id")
     .references(() => userRepo.id)
     .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
 });
 
 export const messageToUserRelations = relations(chat, ({ one }) => ({

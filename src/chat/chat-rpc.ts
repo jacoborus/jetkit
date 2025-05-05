@@ -3,6 +3,7 @@ import { on } from "events";
 import db from "@/db/db";
 import { chat as chatRepo } from "@/chat/chat-repo";
 import { desc, lt } from "drizzle-orm";
+import { MessageFull } from "./chat-schemas";
 
 import { ee, protectedProcedure } from "@/rpc/rpc-core";
 
@@ -22,31 +23,41 @@ export const chatRoutes = {
           author: ctx.user.id,
         })
         .returning();
+      const first = msgs[0];
 
-      ee.emit("newChat", {
-        ...msgs[0],
-        sender: { id: ctx.user.id, name: ctx.user.name, image: ctx.user.image },
-      });
+      const result = {
+        message: first.message,
+        id: first.id,
+        createdAt: first.createdAt,
+        sender: {
+          name: ctx.user.name,
+          image: ctx.user.image,
+        },
+      } as MessageFull;
+
+      ee.emit("newChat", result);
       return { success: true };
     }),
 
   getMessages: protectedProcedure
     .input(
       z.object({
-        before: z.string().datetime().optional(),
+        before: z.string().optional(),
       }),
     )
     .query(async ({ input }) => {
       const messages = await db.query.chat.findMany({
-        where: input.before
-          ? lt(chatRepo.createdAt, new Date(input.before))
-          : undefined,
+        where: input.before ? lt(chatRepo.createdAt, input.before) : undefined,
+        columns: {
+          message: true,
+          id: true,
+          createdAt: true,
+        },
         orderBy: [desc(chatRepo.createdAt)],
         limit: 20,
         with: {
           sender: {
             columns: {
-              id: true,
               name: true,
               image: true,
             },
@@ -66,9 +77,7 @@ export const chatRoutes = {
     )
     .subscription(async function* (opts) {
       for await (const [data] of on(ee, "newChat", { signal: opts.signal })) {
-        // const payload = data as TodoPayload;
-        // yield payload;
-        yield data;
+        yield data as MessageFull;
       }
     }),
 };

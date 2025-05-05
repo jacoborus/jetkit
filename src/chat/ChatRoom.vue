@@ -2,21 +2,11 @@
 import { onBeforeUnmount, ref } from "vue";
 import { client } from "@/rpc/rpc-client";
 import { useUiStore } from "@/store/ui-store";
-
-interface ChatMessage {
-  message: string;
-  id: string;
-  createdAt: string;
-  sender: {
-    id: string;
-    image?: string | null;
-    name: string;
-  };
-}
+import { MessageFull } from "./chat-schemas";
 
 const uiStore = useUiStore();
 const newMsg = ref("");
-const list = ref<ChatMessage[]>([]);
+const list = ref<MessageFull[]>([]);
 
 onBeforeUnmount(
   client.chat.onNewMessage.subscribe(undefined, {

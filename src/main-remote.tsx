@@ -6,7 +6,7 @@ import {
 } from "react-router";
 import "@/lib/i18n";
 
-import "./index.css";
+import "./style.css";
 import UiWrapper from "./views/UiWrapper";
 import RemoteWelcomePage from "@/pages/RemoteWelcomePage.tsx";
 import RemoteDisplayPage from "@/pages/RemoteDisplayPage.tsx";

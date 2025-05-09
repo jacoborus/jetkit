@@ -27,6 +27,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
+      "@/config": [
+        "config.ts"
+      ],
       "@/*": [
         "src/*"
       ],
@@ -42,7 +45,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "index.ts"
+    "config.ts"
   ],
   "references": [
     {

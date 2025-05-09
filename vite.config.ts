@@ -7,8 +7,8 @@ import devServer, { defaultOptions } from "@hono/vite-dev-server";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
-import config from "./src/config";
-// import { resolve } from 'path'
+import config from "./config";
+import { resolve } from "node:path";
 
 export default defineConfig({
   base: "./",
@@ -18,10 +18,13 @@ export default defineConfig({
   // This is the default
   build: {
     outDir: "dist/",
-    // lib: {
-    //   name: 'MyLib',
-    //   entry: resolve(__dirname, 'lib/main.ts')
-    // },
+    lib: {
+      name: "MyLib",
+      entry: {
+        main: resolve(__dirname, "src/main-remote.tsx"),
+        remote: resolve(__dirname, "src/main.tsx"),
+      },
+    },
     // rollupOptions: {
     // input: ['./src/main.ts'],
     // output: {

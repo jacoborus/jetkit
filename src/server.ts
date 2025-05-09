@@ -62,9 +62,9 @@ app
   .use("/dist/*", serveStatic({ root: "dist/" }))
   .route("/auth", authRouter)
   .route("/rpc", rpcServer)
-  .get("reset-password", (c) => {
+  .get("/auth/reset-password", (c) => {
     return c.redirect(
-      `http://localhost:5173/reset-password?token=${c.req.query("token")}`,
+      `${config.BASE_URL}/reset-password?token=${c.req.query("token")}`,
     );
   })
   .get("/*", (c) => c.html(html));

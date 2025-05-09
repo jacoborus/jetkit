@@ -1,31 +1,33 @@
-import { useDeviceStore } from "@/store/device-store"
+import { useGameStore } from "@/store/game-store"
 import { Edit } from "lucide-react"
-import { RemoteDisplay } from "@/store/device-store"
 
 export default function DisplaysPanel() {
-  const store = useDeviceStore()
+  const store = useGameStore()
 
-  function renameRemote(remote: RemoteDisplay) {
-    const newName = window.prompt('input new name', remote.name)
-    if (!newName) return
-    store.renameRemote(remote.id, newName)
-  }
+  const remotes: {} = []
+  // function renameRemote(remote: RemoteDisplay) {
+  //   const newName = window.prompt('input new name', remote.name)
+  //   if (!newName) return
+  //   console.log('change name', remote.name, 'to', newName)
+  //   // store.renameRemote(remote.id, newName)
+  // }
 
   return (
     <div className="div">
       {!store.sharing && !store.connecting && (
-        <button onClick={store.connect} className="btn btn-primary">
+        <button onClick={store.startSharing} className="btn btn-primary">
           Start Sharing
         </button>
       )}
+      {/*
       {store.sharing && !store.connecting && (
         <button onClick={store.stopSharing} className="btn btn-error">
           Stop sharing
         </button>
       )}
+      */}
       <ul>
         <li>is sharing: {store.sharing ? 'yes' : 'no'}</li>
-        <li>is connected: {store.connection ? 'yes' : 'no'}</li>
       </ul>
 
       <table className="table table-sm my-8 text-center">
@@ -37,7 +39,7 @@ export default function DisplaysPanel() {
           </tr>
         </thead>
         <tbody>
-          {store.remotes.map((remote) => (
+          {remotes.map((remote) => (
             <tr key={remote.id}>
               <td>{remote.name}</td>
               <td>{remote.connected ? 'yes' : 'no'}</td>

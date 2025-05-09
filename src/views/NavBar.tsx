@@ -3,7 +3,7 @@ import * as reactUse from "react-use";
 import { Link } from "react-router";
 import { Maximize, Minimize, Menu } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
-import { useDeviceStore } from "@/store/device-store";
+import { useGameStore } from "@/store/game-store";
 import LangSelect from "./LangSelect";
 
 function NavBarMenu() {
@@ -43,7 +43,7 @@ function NavBarMenu() {
 }
 
 export function NavBar({ clockAppRef }: { clockAppRef: RefObject<HTMLDivElement> }) {
-  const deviceStore = useDeviceStore();
+  const gameStore = useGameStore();
   const { useFullscreen, useToggle } = reactUse;
   const [showFullscreen, toggleFullscreen] = useToggle(false);
   const isFullscreen = useFullscreen(clockAppRef, showFullscreen, {
@@ -57,9 +57,8 @@ export function NavBar({ clockAppRef }: { clockAppRef: RefObject<HTMLDivElement>
       </div>
 
       <div className="navbar-center">
-        {deviceStore.connecting && <div className="status status-warning"></div>}
-        {deviceStore.connection && <div className="status status-success"></div>}
-        {deviceStore.sharing && <div className="status status-info"></div>}
+        {gameStore.connecting && <div className="status status-warning"></div>}
+        {gameStore.sharing && <div className="status status-info"></div>}
         <Link to='/' className="btn btn-ghost text-xl">The Poker Clock</Link>
       </div>
 

@@ -28,3 +28,4 @@ dist-ssr
 .migrations
 src/rest/client
 .eslintcache
+tsconfig.tsbuildinfo

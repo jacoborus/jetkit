@@ -1,18 +1,20 @@
-import { useEffect, useRef } from "react";
+import {
+  useEffect,
+  useRef
+} from "react";
 import { useNavigate } from "react-router";
 
 import DisplayView from "@/views/DisplayView";
-import DisplaysPanel from "@/views/DisplaysPanel";
 import { useGameStore } from "@/store/game-store";
-import { useDeviceStore } from "@/store/device-store";
 import { useUiStore } from "@/store/ui-store";
 
 export default function GamePage() {
   const store = useGameStore();
   const uiStore = useUiStore();
-  const deviceStore = useDeviceStore();
   const navigate = useNavigate();
-  const { timerData: data, doTick } = store;
+  const { timerData: data,
+    doTick
+  } = store;
 
   const clockAppRef = useRef<HTMLDivElement>(null);
 
@@ -32,9 +34,6 @@ export default function GamePage() {
   }
 
   useEffect(() => {
-    deviceStore.init()
-  }, []) // eslint-disable-line
-  useEffect(() => {
     if (!data.running) return;
     const interval = setInterval(() => {
       if (!data.running) return;
@@ -45,6 +44,18 @@ export default function GamePage() {
 
   return (
     <div className="p-8" ref={clockAppRef}>
+
+      {!store.sharing && !store.connecting && (
+        <button onClick={store.startSharing} className="btn btn-primary">
+          Start Sharing
+        </button>
+      )}
+
+      <ul>
+        <li>is sharing: {store.sharing ? 'yes' : 'no'}</li>
+        <li>code: {store.code || ''}</li>
+      </ul>
+
       {data.startedAt ? (
         <div>
           <DisplayView />
@@ -54,7 +65,6 @@ export default function GamePage() {
           <button onClick={resetTimer} className="btn">
             Finish game
           </button>
-          <DisplaysPanel />
         </div>
       ) : (
         <PreGame />

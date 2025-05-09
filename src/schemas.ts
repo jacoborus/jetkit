@@ -45,15 +45,15 @@ export type BreaksConf = z.infer<typeof BreaksConf>;
 export const GameLevels = z.array(z.union([Level, Break]));
 export type GameLevels = z.infer<typeof GameLevels>;
 
+export type TimerData = z.infer<typeof TimerData>;
 export const TimerData = z.object({
-  startedAt: z.number(),
-  pausedAt: z.number(),
+  startedAt: z.number().nullable(),
+  pausedAt: z.number().nullable(),
   running: z.boolean(),
   level: z.number(),
   levels: GameLevels,
   code: z.string(),
 });
-export type TimerData = z.infer<typeof TimerData>;
 
 export function getDefaultTimerData(): TimerData {
   return {

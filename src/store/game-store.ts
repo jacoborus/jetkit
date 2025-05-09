@@ -3,12 +3,16 @@ import { create } from "zustand";
 import type { GameLevels, Level, Break } from "@/schemas";
 import { TimerData, getDefaultTimerData } from "@/schemas";
 import { localLoad, localSave } from "@/lib/storage-utils";
-import { useDeviceStore } from "./device-store";
+import { client } from "@/rpc/rpc-client";
+// import { useNavigate } from "react-router";
 
 interface GameState {
   timerData: TimerData;
   minutes: number;
   seconds: number;
+  connecting: boolean;
+  sharing: boolean;
+  code: string;
 }
 
 interface GameActions {
@@ -20,12 +24,16 @@ interface GameActions {
   doTick: (goToConfig: () => void) => void;
   startTimer: () => void;
   togglePlay: () => void;
+  startSharing: () => void;
 }
 
 export const useGameStore = create<GameState & GameActions>()((set, get) => ({
   minutes: 0,
   seconds: 0,
   timerData: getInitialTimerData(),
+  connecting: false,
+  sharing: false,
+  code: "",
 
   setLevels: (levels: GameLevels) => get().updateData({ levels }),
   setMinutes: (minutes: number) => set({ minutes }),
@@ -47,7 +55,10 @@ export const useGameStore = create<GameState & GameActions>()((set, get) => ({
     const timerData = { ...get().timerData, ...data };
     set({ timerData });
     localSave("timer-data", timerData);
-    useDeviceStore.getState().updateDevice(data);
+    if (get().sharing && !get().connecting) {
+      console.log("askjdfhalskjdhflasjkdhflaskjdf");
+      client.game.updateGame.mutate({ game: data });
+    }
   },
 
   togglePlay() {
@@ -57,9 +68,12 @@ export const useGameStore = create<GameState & GameActions>()((set, get) => ({
       return;
     }
     updateData({
-      pausedAt: 0,
+      pausedAt: null,
       running: true,
-      startedAt: data.startedAt + Date.now() - data.pausedAt,
+      startedAt:
+        data.startedAt && data.pausedAt
+          ? data.startedAt + Date.now() - data.pausedAt
+          : null,
     });
   },
 
@@ -93,6 +107,16 @@ export const useGameStore = create<GameState & GameActions>()((set, get) => ({
     if (mins !== minutes) setMinutes(mins);
     if (secs !== seconds) setSeconds(secs);
   },
+
+  async startSharing() {
+    set({ connecting: true });
+    const { code } = await client.game.startSharing.mutate({
+      game: get().timerData,
+    });
+    set({ code, connecting: false, sharing: true });
+    localSave("game-code", code);
+    localSave("is-sharing", true);
+  },
 }));
 
 function getInitialTimerData() {
@@ -101,9 +125,9 @@ function getInitialTimerData() {
   return getDefaultTimerData();
 }
 
-function getTotalTime(startedAt: number, level: Level | Break) {
+function getTotalTime(startedAt: number | null, level: Level | Break) {
   const roundTime = level.duration * 60_000;
-  const elapsedTime = Date.now() - startedAt;
+  const elapsedTime = Date.now() - (startedAt ?? 0);
   return roundTime - elapsedTime;
 }
 

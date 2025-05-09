@@ -26,5 +26,5 @@ export const RemoteInsertSchema = createInsertSchema(remoteRepo)
 
 export type RemoteDeviceSelectSchema = z.infer<typeof RemoteDeviceSelectSchema>;
 export const RemoteDeviceSelectSchema = createSelectSchema(remoteRepo).omit({
-  sharedDevice: true,
+  gameId: true,
 });

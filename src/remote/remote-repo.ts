@@ -13,7 +13,7 @@ export default table("remote", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   connected: boolean("connected").default(false).notNull(),
-  gameId: uuid("sharedDevice")
+  gameId: uuid("game_id")
     .references(() => gameRepo.id)
     .notNull(),
 });

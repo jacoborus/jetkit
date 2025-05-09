@@ -3,6 +3,7 @@ import { eq, and } from "drizzle-orm";
 import db from "../db/db";
 import remoteRepo from "./remote-repo";
 import * as schemas from "./remote-schemas";
+import * as gameService from "@/game/game-service";
 
 interface ListOptions {
   limit?: number;
@@ -21,10 +22,9 @@ export async function read(id: string) {
   });
 }
 
-export async function listBySharedDevice(sharedDeviceId: string) {
+export async function listBySharedDevice(gameId: string) {
   return await db.query.remote.findMany({
-    where: (remote, { eq, and }) =>
-      and(eq(remote.sharedDevice, sharedDeviceId)),
+    where: (remote, { eq, and }) => and(eq(remote.gameId, gameId)),
     columns: {
       id: true,
       name: true,
@@ -40,7 +40,7 @@ export async function update(id: string, payload: schemas.RemoteUpdateSchema) {
     .where(and(eq(remoteRepo.id, id)))
     .returning();
   const remote = updatedRemote[0];
-  emitRemoteUpdate(remote.sharedDevice, remote);
+  emitRemoteUpdate(remote.gameId, remote);
   return remote;
 }
 
@@ -57,8 +57,8 @@ export async function list(options?: ListOptions) {
 
 export async function generateRemote(code: string, remoteId?: string) {
   try {
-    const deviceData = await deviceService.getByCode(code);
-    if (!deviceData) return { error: "Device not found" };
+    const gameData = await gameService.getGameByCode(code);
+    if (!gameData) return { error: "game not found" };
 
     if (remoteId) {
       const remote = await read(remoteId);
@@ -68,7 +68,7 @@ export async function generateRemote(code: string, remoteId?: string) {
     const remote = await create({
       connected: true,
       name: "",
-      sharedDevice: deviceData.id,
+      gameId: gameData.id,
     });
 
     return { remote };

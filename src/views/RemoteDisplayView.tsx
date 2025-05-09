@@ -15,6 +15,8 @@ export default function RemoteDisplayView() {
 
     if (shared.running) {
       interval = setInterval(() => {
+        if (!shared.running && interval) clearInterval(interval)
+        if (!shared.startedAt) { throw new Error('fasdfasdf') }
         const totalTime = getTotalTime(new Date(shared.startedAt).getTime(), duration);
 
         if (totalTime < 0) {
@@ -31,7 +33,7 @@ export default function RemoteDisplayView() {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [shared, minutes, seconds, duration])
+  }, [shared, minutes, seconds, duration, shared.running])
 
   return (
     <div className="min-h-screen bg-base-200 p-4">

@@ -41,3 +41,5 @@ export const client = createTRPCClient<RpcRouter>({
     }),
   ],
 });
+
+export default client;

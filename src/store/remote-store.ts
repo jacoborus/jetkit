@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { GameLevels } from "@/schemas";
-import { useUiStore } from "./ui-store";
+import { useUiStore } from "@/store/ui-store";
 import { localLoad, localSave } from "@/lib/storage-utils";
+import client from "@/rpc/rpc-client";
 
 interface RemoteState {
   connecting: boolean;
@@ -9,8 +10,8 @@ interface RemoteState {
   running: boolean;
   remoteId: string;
   level: number;
-  startedAt: number;
-  pausedAt: number;
+  startedAt: number | null;
+  pausedAt: number | null;
   levels: GameLevels;
 }
 
@@ -20,8 +21,6 @@ interface RemoteActions {
   notifyDisconnected: () => void;
 }
 
-const url = `${import.meta.env.VITE_WS_URL}/remote`;
-
 type RemoteStoreState = RemoteState & RemoteActions;
 export const useRemoteStore = create<RemoteStoreState>((set, get) => ({
   connection: undefined,
@@ -29,60 +28,63 @@ export const useRemoteStore = create<RemoteStoreState>((set, get) => ({
   remoteId: localLoad("remote-id") || "",
   running: false,
   level: 0,
-  startedAt: 0,
-  pausedAt: 0,
+  startedAt: null,
+  pausedAt: null,
   levels: [],
 
   connect(code: string) {
     if (get().connection || get().connecting) return;
     set({ connecting: true });
-    const connection = new WebSocket(url);
 
-    connection.addEventListener("open", function () {
-      connection.send(
-        JSON.stringify({ type: "subscribe", code, id: get().remoteId }),
-      );
-    });
+    client.remote.connectToGame.subscribe(
+      { code },
+      {
+        onData: (game) => {
+          // console.log(JSON.stringify(game, null, 2));
 
-    connection.addEventListener("close", function () {
-      console.log("==== on close ====");
-      set({ connection: undefined, connecting: false });
-      get().notifyDisconnected();
-    });
+          const connected =
+            game.connected !== undefined ? { connected: game.connected } : {};
 
-    connection.addEventListener("message", function (message) {
-      const data = JSON.parse(message.data);
+          const level = game.level ? { level: game.level } : {};
 
-      if (data.kind === "auth") {
-        localSave("remote-id", data.data);
-        return;
-      }
+          const levels = game.levels ? { levels: JSON.parse(game.levels) } : {};
 
-      if (data.type === "ping") {
-        connection.send(JSON.stringify({ type: "pong" }));
-        return;
-      }
+          const pausedAt = game.pausedAt
+            ? { pausedAt: new Date(game.pausedAt).getTime() }
+            : {};
 
-      if (data.kind === "updatedDevice") {
-        const levels = data.data.levels
-          ? { levels: JSON.parse(data.data.levels) }
-          : {};
+          const running =
+            game.running !== undefined ? { running: game.running } : {};
 
-        const started = data.data.startedAt
-          ? { startedAt: new Date(data.data.startedAt).getTime() }
-          : {};
+          const startedAt = game.startedAt
+            ? { startedAt: new Date(game.startedAt).getTime() }
+            : {};
+          const update = {
+            ...connected,
+            ...level,
+            ...levels,
+            ...startedAt,
+            ...pausedAt,
+            ...running,
+          };
+          console.log(update);
 
-        const paused = data.data.pausedAt
-          ? { pausedAt: new Date(data.data.pausedAt).getTime() }
-          : {};
+          set(update);
+        },
 
-        set({ ...data.data, ...levels, started, paused });
-        return;
-      }
+        onError(err) {
+          useUiStore
+            .getState()
+            .notify(err.message ?? "Error", { kind: "error" });
+        },
+      },
+    );
 
-      console.log("===== unknown message =====");
-      console.log(data);
-    });
+    // connection.addEventListener("close", function () {
+    //   console.log("==== on close ====");
+    //   set({ connection: undefined, connecting: false });
+    //   get().notifyDisconnected();
+    // });
   },
 
   changeLevel(level: number) {

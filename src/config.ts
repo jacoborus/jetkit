@@ -59,7 +59,7 @@ const envVarsSchema = z.object({
     .default("warn"),
 });
 
-const config = envVarsSchema.parse(process.env);
+const config = envVarsSchema.parse(process.env || {});
 export default config;
 
 export const DB_URL = `postgres://${config.DB_USER}:${config.DB_PASSWORD}@localhost:${config.DB_PORT}/${config.DB_NAME}`;

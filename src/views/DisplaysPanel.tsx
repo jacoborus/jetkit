@@ -1,16 +1,19 @@
 import { useGameStore } from "@/store/game-store"
 import { Edit } from "lucide-react"
+import type { RemoteSchema } from "@/remote/remote-schemas"
 
 export default function DisplaysPanel() {
   const store = useGameStore()
 
-  const remotes: {} = []
-  // function renameRemote(remote: RemoteDisplay) {
-  //   const newName = window.prompt('input new name', remote.name)
-  //   if (!newName) return
-  //   console.log('change name', remote.name, 'to', newName)
-  //   // store.renameRemote(remote.id, newName)
-  // }
+  const remotes: RemoteSchema[] = []
+
+  function renameRemote(remote: RemoteSchema) {
+    console.log(remote)
+    // const newName = window.prompt('input new name', remote.name)
+    // if (!newName) return
+    // console.log('change name', remote.name, 'to', newName)
+    // store.renameRemote(remote.id, newName)
+  }
 
   return (
     <div className="div">

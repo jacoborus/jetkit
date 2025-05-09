@@ -20,7 +20,7 @@ export default function UiWrapper({ children }: { children: ReactNode }) {
 
   return (
     <div className="ui-wrapper bg-base-100" ref={clockAppRef}>
-      {clockAppRef && <NavBar clockAppRef={clockAppRef} />}
+      {clockAppRef !== null && <NavBar clockAppRef={clockAppRef} />}
       {children}
       <ModalList />
       <NotificationsList />

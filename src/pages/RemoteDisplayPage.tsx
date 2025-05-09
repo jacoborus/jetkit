@@ -7,6 +7,7 @@ import { useRemoteStore } from '@/store/remote-store'
 export default function RemoteDisplayPage() {
   const remote = useRemoteStore();
   const { code } = useParams<{ code: string }>()
+
   useEffect(() => {
     if (remote.running) return
     if (!code) return
@@ -16,9 +17,6 @@ export default function RemoteDisplayPage() {
   return (
     <>
       <RemoteDisplayView />
-      {/**
-      {remote.running && <RemoteDisplayView />}
-      */}
     </>
   )
 }

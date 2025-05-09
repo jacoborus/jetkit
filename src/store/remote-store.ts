@@ -1,14 +1,14 @@
 import { create } from "zustand";
 import { GameLevels } from "@/schemas";
 import { useUiStore } from "@/store/ui-store";
-import { localLoad, localSave } from "@/lib/storage-utils";
+// import { localLoad, localSave } from "@/lib/storage-utils";
 import client from "@/rpc/rpc-client";
 
 interface RemoteState {
   connecting: boolean;
   connection?: WebSocket;
   running: boolean;
-  remoteId: string;
+  // remoteId: string;
   level: number;
   startedAt: number | null;
   pausedAt: number | null;
@@ -25,7 +25,7 @@ type RemoteStoreState = RemoteState & RemoteActions;
 export const useRemoteStore = create<RemoteStoreState>((set, get) => ({
   connection: undefined,
   connecting: false,
-  remoteId: localLoad("remote-id") || "",
+  // remoteId: localLoad("remote-id") || "",
   running: false,
   level: 0,
   startedAt: null,
@@ -34,14 +34,11 @@ export const useRemoteStore = create<RemoteStoreState>((set, get) => ({
 
   connect(code: string) {
     if (get().connection || get().connecting) return;
-    set({ connecting: true });
 
     client.remote.connectToGame.subscribe(
       { code },
       {
         onData: (game) => {
-          // console.log(JSON.stringify(game, null, 2));
-
           const connected =
             game.connected !== undefined ? { connected: game.connected } : {};
 
@@ -59,6 +56,7 @@ export const useRemoteStore = create<RemoteStoreState>((set, get) => ({
           const startedAt = game.startedAt
             ? { startedAt: new Date(game.startedAt).getTime() }
             : {};
+
           const update = {
             ...connected,
             ...level,
@@ -67,7 +65,6 @@ export const useRemoteStore = create<RemoteStoreState>((set, get) => ({
             ...pausedAt,
             ...running,
           };
-          console.log(update);
 
           set(update);
         },
@@ -77,14 +74,18 @@ export const useRemoteStore = create<RemoteStoreState>((set, get) => ({
             .getState()
             .notify(err.message ?? "Error", { kind: "error" });
         },
+
+        // onConnectionStateChange(state) {
+        //   console.log("*******************");
+        //   console.log(state);
+        //   useUiStore.getState().notify("asdfasdfasdf", { kind: "error" });
+        // },
+
+        onStopped() {
+          useUiStore.getState().notify("STOPPED", { kind: "error" });
+        },
       },
     );
-
-    // connection.addEventListener("close", function () {
-    //   console.log("==== on close ====");
-    //   set({ connection: undefined, connecting: false });
-    //   get().notifyDisconnected();
-    // });
   },
 
   changeLevel(level: number) {

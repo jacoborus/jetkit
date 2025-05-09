@@ -14,24 +14,21 @@ interface AuthState {
 }
 
 interface AuthActions {
-  init: () => void;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string, name: string) => Promise<boolean>;
   signOut: () => Promise<void>;
+  setLoggedOut: () => void;
+
   // readMe: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState & AuthActions>((set) => ({
+export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
   isLoggedIn: localLoad("isLoggedIn") || false,
   user: {
     id: "",
     email: "",
     name: "",
     language: "",
-  },
-
-  async init() {
-    console.log("authStore init");
   },
 
   async signIn(email: string, password: string) {
@@ -68,6 +65,10 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
 
   async signOut() {
     await authClient.signOut();
+    get().setLoggedOut();
+  },
+
+  setLoggedOut() {
     set({ isLoggedIn: false });
     localSave("isLoggedIn", false);
     useUiStore

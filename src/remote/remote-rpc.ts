@@ -14,7 +14,10 @@ export const remoteRoutes = {
       }),
     )
     .subscription(async function* ({ input, signal }) {
-      const game = await gameService.getGameByCode(input.code);
+      const code = input.code.toLowerCase();
+
+      const game = await gameService.getGameByCode(code);
+
       if (!game) {
         throw new TRPCError({
           code: "NOT_FOUND",

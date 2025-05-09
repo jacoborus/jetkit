@@ -14,16 +14,36 @@ import { rpcServer } from "@/rpc/rpc-server";
 import { wss } from "@/rpc/rpc-server";
 
 const isProd = process.env["NODE_ENV"] === "production";
+console.log(`Running on prod? => ${isProd}`);
 
-let html = await readFile(
+let htmlApp = await readFile(
   isProd ? "dist/index.html" : "src/index.html",
   "utf8",
 );
 
-console.log(`Running on prod? => ${isProd}`);
+if (!isProd) {
+  htmlApp = htmlApp.replace(
+    "<head>",
+    `
+    <script type="module" src="/@vite/client"></script>
+    <script type="module">
+      import RefreshRuntime from "/@react-refresh";
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+    </script>
+    `,
+  );
+}
+
+let remoteApp = await readFile(
+  isProd ? "dist/index-remote.html" : "src/index-remote.html",
+  "utf8",
+);
 
 if (!isProd) {
-  html = html.replace(
+  remoteApp = remoteApp.replace(
     "<head>",
     `
     <script type="module" src="/@vite/client"></script>
@@ -67,7 +87,8 @@ app
       `${config.BASE_URL}/reset-password?token=${c.req.query("token")}`,
     );
   })
-  .get("/*", (c) => c.html(html));
+  .get("/display/*", (c) => c.html(remoteApp))
+  .get("/*", (c) => c.html(htmlApp));
 
 interface GlobalThis {
   oldWss: WebSocketServer;

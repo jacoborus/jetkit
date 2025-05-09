@@ -13,8 +13,8 @@ import SignUp from "@/pages/SignUp.tsx";
 import ConfPage from "@/pages/ConfPage.tsx";
 import GamePage from "@/pages/GamePage.tsx";
 import UiWrapper from "./views/UiWrapper";
-import RemoteWelcomePage from "@/pages/RemoteWelcomePage.tsx";
-import RemoteDisplayPage from "@/pages/RemoteDisplayPage.tsx";
+// import RemoteWelcomePage from "@/pages/RemoteWelcomePage.tsx";
+// import RemoteDisplayPage from "@/pages/RemoteDisplayPage.tsx";
 
 const rootEl = document.getElementById("root")
 if (!rootEl) throw new Error('Root element not found');
@@ -29,8 +29,6 @@ createRoot(rootEl).render(
         <Route path="/game/*" element={<GamePage />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/display/" element={<RemoteWelcomePage />} />
-        <Route path="/display/:code" element={<RemoteDisplayPage />} />
       </Routes>
     </UiWrapper>
   </BrowserRouter>

@@ -31,11 +31,11 @@ export const remoteRoutes = {
 
       yield {
         connected: game.connected,
-        running: game.running,
-        levels: game.levels,
         level: game.level,
-        startedAt: game.startedAt,
+        levels: game.levels,
         pausedAt: game.pausedAt,
+        running: game.running,
+        startedAt: game.startedAt,
       };
 
       for await (const [data] of on(ee, `gameUpdate:${game.id}`, { signal })) {

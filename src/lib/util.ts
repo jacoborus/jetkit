@@ -1,4 +1,4 @@
-import { GameLevels } from "@tpc/schemas";
+import { GameLevels } from "@/lib/front-schemas";
 
 type TwoDigitString = `${number}${number}`;
 

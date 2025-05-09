@@ -16,19 +16,12 @@ export async function createSharedGame(
     .values({
       ...payload,
       code,
+      connected: true,
       userId: userId,
       sessionId,
     })
     .returning({
-      // id: gameRepo.id,
       code: gameRepo.code,
-      // capacity: gameRepo.capacity,
-      // connected: gameRepo.connected,
-      // running: gameRepo.running,
-      // levels: gameRepo.levels,
-      // level: gameRepo.level,
-      // startedAt: gameRepo.startedAt,
-      // pausedAt: gameRepo.pausedAt,
     });
 
   return games[0].code;
@@ -47,7 +40,7 @@ export async function updateGame(
       id: gameRepo.id,
       code: gameRepo.code,
       capacity: gameRepo.capacity,
-      connected: gameRepo.connected,
+      connected: gameRepo.connected || true,
       running: gameRepo.running,
       levels: gameRepo.levels,
       level: gameRepo.level,
@@ -86,4 +79,29 @@ export async function getGame(userId: string, sessionId: string) {
       pausedAt: true,
     },
   });
+}
+
+export async function getGameId(userId: string, sessionId: string) {
+  const game = await db.query.game.findFirst({
+    where: (game, { eq, and }) =>
+      and(eq(game.userId, userId), eq(game.sessionId, sessionId)),
+    columns: {
+      id: true,
+    },
+  });
+  if (!game) return null;
+  return game.id;
+}
+
+export async function getGameRemotes(gameId: string) {
+  const remotes = await db.query.remote.findMany({
+    where: (remote, { eq, and }) => and(eq(remote.gameId, gameId)),
+    columns: {
+      id: true,
+      name: true,
+      connected: true,
+    },
+  });
+
+  return remotes;
 }

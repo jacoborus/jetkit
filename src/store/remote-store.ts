@@ -90,7 +90,7 @@ export const useRemoteStore = create<RemoteStoreState>((set, get) => ({
   },
 
   notifyDisconnected() {
-    useUiStore.getState().addNotification("You're device is disconnected", {
+    useUiStore.getState().notify("You're device is disconnected", {
       kind: "error",
       duration: 5,
     });

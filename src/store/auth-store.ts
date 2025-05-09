@@ -56,13 +56,11 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         });
         localSave("isLoggedIn", true);
 
-        useUiStore.getState().addNotification(`Welcome back ${me.name || ""}!`);
+        useUiStore.getState().notify(`Welcome back ${me.name || ""}!`);
         return true;
       })
       .catch(() => {
-        useUiStore
-          .getState()
-          .addNotification("Invalid credentials", { kind: "error" });
+        useUiStore.getState().notify("Invalid credentials", { kind: "error" });
         set({ isLoggedIn: false });
         return false;
       });
@@ -74,7 +72,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     localSave("isLoggedIn", false);
     useUiStore
       .getState()
-      .addNotification("You have been logged out", { kind: "success" });
+      .notify("You have been logged out", { kind: "success" });
   },
 
   async signUp(email: string, password: string, name: string) {
@@ -86,9 +84,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         return true;
       })
       .catch(() => {
-        useUiStore
-          .getState()
-          .addNotification("Invalid credentials", { kind: "error" });
+        useUiStore.getState().notify("Invalid credentials", { kind: "error" });
         return false;
       });
   },

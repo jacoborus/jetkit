@@ -4,6 +4,7 @@ import type { GameLevels, Level, Break } from "@/schemas";
 import { TimerData, getDefaultTimerData } from "@/schemas";
 import { localLoad, localSave } from "@/lib/storage-utils";
 import { client } from "@/rpc/rpc-client";
+import { useUiStore } from "./ui-store";
 // import { useNavigate } from "react-router";
 
 interface GameState {
@@ -16,6 +17,7 @@ interface GameState {
 }
 
 interface GameActions {
+  init: () => void;
   resetTimer: () => void;
   updateData: (input: Partial<TimerData>) => void;
   setLevels: (levels: GameLevels) => void;
@@ -39,6 +41,14 @@ export const useGameStore = create<GameState & GameActions>()((set, get) => ({
   setMinutes: (minutes: number) => set({ minutes }),
   setSeconds: (seconds: number) => set({ seconds }),
   resetTimer: () => set({ timerData: getDefaultTimerData() }),
+
+  init() {
+    const code = localLoad<string>("game-code") ?? null;
+    const sharing = localLoad<boolean>("is-sharing") ?? false;
+    if (code && sharing) {
+      set({ code, sharing });
+    }
+  },
 
   startTimer() {
     get().updateData({
@@ -116,6 +126,17 @@ export const useGameStore = create<GameState & GameActions>()((set, get) => ({
     set({ code, connecting: false, sharing: true });
     localSave("game-code", code);
     localSave("is-sharing", true);
+  },
+
+  async subscribeToRemotes() {
+    client.game.connectToGame.subscribe(undefined, {
+      onData: (remotes) => {
+        console.log(remotes);
+      },
+      onError(err) {
+        useUiStore.getState().notify(err.message ?? "Error", { kind: "error" });
+      },
+    });
   },
 }));
 

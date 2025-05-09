@@ -3,7 +3,6 @@ import { eq, and } from "drizzle-orm";
 import db from "../db/db";
 import remoteRepo from "./remote-repo";
 import * as schemas from "./remote-schemas";
-import * as deviceService from "../device/device-service";
 
 interface ListOptions {
   limit?: number;

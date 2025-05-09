@@ -6,7 +6,8 @@ import {
 } from "drizzle-zod";
 
 import gameRepo from "@/game/game-repo";
-import { GameLevels, TimerData } from "@tpc/schemas";
+import { GameLevels, TimerData } from "@/lib/front-schemas";
+// import { GameLevels, TimerData } from "@tpc/schemas";
 
 export type GameSchema = z.infer<typeof GameSchema>;
 export const GameSchema = createSelectSchema(gameRepo);

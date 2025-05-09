@@ -1,6 +1,6 @@
 import { z } from "zod";
-// import { on } from "events";
-// import { TRPCError } from "@trpc/server";
+import { on } from "events";
+import { TRPCError } from "@trpc/server";
 
 import { ee, protectedProcedure } from "@/rpc/rpc-core";
 import * as service from "@/game/game-service.ts";
@@ -10,6 +10,7 @@ import {
   PartialTimerPayload,
   partialTimerToGameData,
 } from "./game-schemas";
+import * as gameService from "@/game/game-service";
 
 export const gameRoutes = {
   startSharing: protectedProcedure
@@ -42,4 +43,28 @@ export const gameRoutes = {
 
       return { success: true };
     }),
+
+  connectToGame: protectedProcedure.subscription(async function* ({
+    ctx,
+    signal,
+  }) {
+    const userId = ctx.user.id;
+    const sessionId = ctx.session.id;
+    const gameId = await gameService.getGameId(userId, sessionId);
+
+    if (!gameId) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Game not found",
+      });
+    }
+
+    const remotes = await gameService.getGameRemotes(gameId);
+
+    yield { remotes };
+
+    for await (const [data] of on(ee, `remotes:${gameId}`, { signal })) {
+      yield data as { id: string; name: string; connected: boolean }[];
+    }
+  }),
 };

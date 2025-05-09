@@ -33,6 +33,8 @@ export default function GamePage() {
     navigate("/setup");
   }
 
+  useEffect(store.init, [])
+
   useEffect(() => {
     if (!data.running) return;
     const interval = setInterval(() => {

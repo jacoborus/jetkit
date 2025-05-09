@@ -35,7 +35,7 @@ interface UiState {
 }
 
 interface UiActions {
-  addNotification: (message: string, opts?: AddNotificationOpts) => void;
+  notify: (message: string, opts?: AddNotificationOpts) => void;
   removeNotification: (id: string) => void;
   addModal: (opts: Partial<ModalData>) => void;
   removeModal: (id: string) => void;
@@ -52,7 +52,7 @@ export const useUiStore = create<UiState & UiActions>((set, get) => ({
   notifications: [],
   modals: [],
 
-  addNotification: (message, opts?: AddNotificationOpts) => {
+  notify: (message, opts?: AddNotificationOpts) => {
     const { removeNotification, notifications } = get();
     const notification = createNotificationData(message, opts);
     set({ notifications: [...notifications, notification] });

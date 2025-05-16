@@ -29,4 +29,10 @@ export const userRoutes = {
     await service.remove(input.id);
     return true;
   }),
+
+  changeRole: adminProcedure
+    .input(withId.extend({ role: z.enum(["admin", "regular"]) }))
+    .mutation(
+      async ({ input }) => (await service.changeRole(input.id, input.role))[0],
+    ),
 };

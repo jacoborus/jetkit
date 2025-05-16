@@ -14,14 +14,26 @@ import { rpcServer } from "@/rpc/rpc-server";
 import { wss } from "@/rpc/rpc-server";
 
 const isProd = process.env["NODE_ENV"] === "production";
-let html = await readFile(isProd ? "dist/index.html" : "index.html", "utf8");
-
 console.log(`Running on prod? => ${isProd}`);
 
+let htmlApp = await readFile(
+  isProd ? "dist/index.html" : "./index.html",
+  "utf8",
+);
+
 if (!isProd) {
-  html = html.replace(
+  htmlApp = htmlApp.replace(
     "<head>",
-    `<script type="module" src="/@vite/client"></script>`,
+    `
+    <script type="module" src="/@vite/client"></script>
+    <script type="module">
+      import RefreshRuntime from "/@react-refresh";
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+    </script>
+    `,
   );
 }
 
@@ -49,12 +61,12 @@ app
   .use("/dist/*", serveStatic({ root: "dist/" }))
   .route("/auth", authRouter)
   .route("/rpc", rpcServer)
-  .get("reset-password", (c) => {
+  .get("/auth/reset-password", (c) => {
     return c.redirect(
-      `http://localhost:5173/reset-password?token=${c.req.query("token")}`,
+      `${config.BASE_URL}/reset-password?token=${c.req.query("token")}`,
     );
   })
-  .get("/*", (c) => c.html(html));
+  .get("/*", (c) => c.html(htmlApp));
 
 interface GlobalThis {
   oldWss: WebSocketServer;

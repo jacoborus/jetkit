@@ -26,6 +26,7 @@ dist-ssr
 .env
 *.db
 .migrations
-src/rest/client
 .eslintcache
 tsconfig.tsbuildinfo
+tsconfig.node.tsbuildinfo
+.mails

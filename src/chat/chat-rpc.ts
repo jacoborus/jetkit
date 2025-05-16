@@ -76,8 +76,12 @@ export const chatRoutes = {
         .optional(),
     )
     .subscription(async function* (opts) {
-      for await (const [data] of on(ee, "newChat", { signal: opts.signal })) {
-        yield data as MessageFull;
+      try {
+        for await (const [data] of on(ee, "newChat", { signal: opts.signal })) {
+          yield data as MessageFull;
+        }
+      } finally {
+        console.log("Subscription closed");
       }
     }),
 };

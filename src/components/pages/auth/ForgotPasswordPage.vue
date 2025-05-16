@@ -10,7 +10,7 @@ const email = ref("");
 async function requestNewOne() {
   const { error } = await authClient.forgetPassword({
     email: email.value,
-    redirectTo: "/reset-password",
+    redirectTo: "/auth/password-reset",
   });
   isSent.value = true;
   if (error) {

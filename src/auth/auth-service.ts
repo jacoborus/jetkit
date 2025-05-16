@@ -58,6 +58,13 @@ export default betterAuth({
     },
   },
 
+  // socialProviders: {
+  //   github: {
+  //     clientId: process.env.GITHUB_CLIENT_ID as string,
+  //     clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+  //   },
+  // },
+
   advanced: {
     database: {
       generateId: false,
@@ -70,7 +77,8 @@ export default betterAuth({
     defaultCookieAttributes: {
       sameSite: "none",
       secure: true,
-      partitioned: true, // New browser standards will mandate this for foreign cookies
+      // New browser standards will mandate this for foreign cookies
+      partitioned: true,
     },
   },
 });
